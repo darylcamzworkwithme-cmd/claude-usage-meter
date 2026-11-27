@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Local state, logs, previews
+*.log
+widget_state.json
+preview*.png
+preview*.gif
+frame.png
+*_preview.png
+!docs/images/*
+
+# Never commit credentials or personal backups
+.credentials.json
+*.env
+.env*
+backup/
+*.exe

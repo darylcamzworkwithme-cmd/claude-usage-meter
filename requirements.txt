@@ -1,0 +1,9 @@
+hidapi>=0.14
+pillow>=10.0
+pystray>=0.19
+winrt-runtime>=2.0
+winrt-Windows.Devices.Bluetooth>=2.0
+winrt-Windows.Devices.Enumeration>=2.0
+winrt-Windows.Storage.Streams>=2.0
+winrt-Windows.Foundation>=2.0
+winrt-Windows.Foundation.Collections>=2.0
