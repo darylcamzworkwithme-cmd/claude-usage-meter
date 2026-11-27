@@ -24,7 +24,8 @@ The whole project was made with Claude Code. [docs/PROMPTS.md](docs/PROMPTS.md) 
 
 - Windows 10/11, Python 3.10+
 - Claude Code installed and signed in
-- Optional: Royal Kludge **RK N99** (USB cable for the screen; Bluetooth for battery level)
+- Optional: Royal Kludge **RK N99** (USB cable for the screen; Bluetooth for battery level).
+  Other RK keyboards with screens (S98, S85, N80, M87) aren't supported yet; see [docs/COMPATIBILITY.md](docs/COMPATIBILITY.md) and run `python tools/detect.py`.
 
 ## Install
 
