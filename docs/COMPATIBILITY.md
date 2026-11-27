@@ -1,5 +1,7 @@
 # Keyboard compatibility
 
+> Using any keyboard feature is at your own risk; see the [Disclaimer](../DISCLAIMER.md).
+
 The desktop widget and tray icon work on any Windows PC. No keyboard is needed. This page covers the **keyboard screen** feature.
 
 Run `python tools/detect.py` to see which Royal Kludge keyboard is connected and whether it's supported. It only reads; it never writes.
@@ -31,9 +33,20 @@ All RK screen uploads need **wired (USB) mode**. RK's own software doesn't uploa
 3. Or follow prompt 4 in [PROMPTS.md](PROMPTS.md) to have Claude Code work it out safely: read-only first, backups before writes.
 4. Add a module next to `rk_screen.py` and open a pull request with your findings.
 
-## Other brands
+## Other brands: possible with porting
 
-Not supported. Keyboards that use VIA/QMK firmware, or that have their own screen software, would need their own protocol work.
+**None of these are supported by this project yet**, and none are tested. They're listed because each has an independent community tool that already uploads images to the keyboard's screen. That's the hard part, so adding one here would mean wrapping that tool's protocol in a module next to `rk_screen.py` and fitting the design to its screen size. Check each project's own license and warnings first.
+
+| Brand / model | Screen | Community tool (not ours) | What it reports |
+|---|---|---|---|
+| Ajazz / Epomaker **AK820 Pro** | TFT | [wsclx/ak820pro-modder](https://gh.r-mj.com/wsclx/ak820pro-modder) (macOS-first) | TFT image upload decoded; on-screen check still in progress. An earlier Rust attempt (gohv) only partly worked. |
+| Ajazz **AKS075** | 128×128 TFT | [aar-rafi/aks075-linux](https://gh.r-mj.com/aar-rafi/aks075-linux) | Static images, GIFs and clock sync; protocol documented |
+| Yunzii **AL80** | built-in display (separate smart module) | [snokatt/yunlcd](https://codeberg.org/snokatt/yunlcd), [snackdriven/al80-lcd](https://github.com/snackdriven/al80-lcd) | Time sync, page switching, image/GIF upload |
+| Zuoya **GMK87** | 240×135 | [gmk87-node](https://codedgar.github.io/gmk87-node/) | Image/GIF upload (up to 36 frames); Linux udev rules |
+| XVX **S-K80** | LCD | [community gist](https://gist.github.com/TheNotary/ce7844f9333bca7fafcc7409ca6d657b) | Early protocol notes |
+| DIY / open hardware (keezyboost40, HelloWord, …) | various | their own firmware | You control the firmware, so add a usage display directly |
+
+Keyboards on **QMK/VIA** firmware usually don't expose their screen to the PC at all without custom firmware. Vendor screen apps on other brands (Yunzii IF99 and others) use their own undocumented protocols.
 
 ## Sources
 

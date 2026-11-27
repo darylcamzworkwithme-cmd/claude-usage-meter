@@ -3,6 +3,8 @@
 A tiny, animated Claude Code usage meter for Windows: a taskbar widget, a tray icon, and the round knob screen on a Royal Kludge RK N99 keyboard. It shows your 5-hour and weekly limits at a glance, with a pixel crab and Claude Code's "thinking" spinner.
 
 > **Unofficial.** Not affiliated with, endorsed by, or supported by Anthropic or Royal Kludge. "Claude" and the Claude pixel mascot are Anthropic's; "Royal Kludge"/"RK" are Royal Kludge's. Used here for identification only.
+>
+> ⚠️ **Use at your own risk.** The keyboard feature writes to your keyboard screen's memory using a reverse-engineered protocol. The authors aren't liable for any damage to your keyboard, computer, data or accounts. Read the full **[Disclaimer](DISCLAIMER.md)** before using it.
 
 | Desktop widget (docked, floating, expanded card) | Keyboard knob screen | Tray icon |
 |---|---|---|
@@ -68,6 +70,6 @@ Today's token counts and the activity graph always come from your local Claude C
 | `battery.py` | Keyboard battery over Bluetooth LE (read-only) |
 | `tools/hidlog.js` | Optional WebHID logger for studying other RK keyboards |
 
-## License
+## License and disclaimer
 
-[MIT](LICENSE)
+[MIT](LICENSE). Provided as is, without warranty; see [DISCLAIMER.md](DISCLAIMER.md).
