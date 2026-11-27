@@ -19,14 +19,14 @@ import hid
 from config import HOTKEY, TOKEN_BUDGET, UPDATE_EVERY
 from hotkey import listen
 from render import FRAME_DELAY, FRAMES, render_frames
-from rk_screen import PID, VID, ScreenError, show, upload_frames
+from rk_screen import screen_present, PID, VID, ScreenError, show, upload_frames
 from usage import meter_snapshot as snapshot
 
 POLL = 15  # seconds between cable checks
 
 
 def cable_connected():
-    return any(d["usage_page"] == 0xFF03 for d in hid.enumerate(VID, PID))
+    return screen_present()
 
 
 def fingerprint(s):

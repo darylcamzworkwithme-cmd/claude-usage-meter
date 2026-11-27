@@ -26,12 +26,15 @@ MUTED = (170, 162, 150)
 WARN = (240, 172, 70)
 HOT = (240, 80, 64)
 
-F = "C:/Windows/Fonts/"
-SERIF_B = F + "georgiab.ttf"
-SANS_SB = F + "seguisb.ttf"
+from platform_support import font_path, load_font
+
+SERIF_B = font_path("serif_bold")
+SANS_SB = font_path("sans_semibold")
+SANS = font_path("sans")
+SANS_B = font_path("sans_bold")
 
 SS = 3
-SYMBOLS = F + "seguisym.ttf"
+SYMBOLS = font_path("symbols")
 
 # Claude Code's thinking spinner, played forward then back like the CLI.
 SPINNER = ["·", "✢", "✳", "✶", "✻", "✽"]
@@ -53,7 +56,7 @@ LEGS = (3, 5, 10, 12)       # leg columns, 2 tall below the body
 
 
 def _font(path, size):
-    return ImageFont.truetype(path, int(size * SS))
+    return load_font(path, size * SS)
 
 
 def _accent(s):

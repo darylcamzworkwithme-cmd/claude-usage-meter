@@ -1,0 +1,5 @@
+# macOS (experimental)
+hidapi>=0.14
+pillow>=10.1
+rumps>=0.4
+pynput>=1.7

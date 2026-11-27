@@ -59,7 +59,8 @@ def _pct_icon(pct, color):
     if pct > 0:
         d.arc([3, 3, ICON - 4, ICON - 4], -90, -90 + 360 * pct, fill=color, width=7)
     n = str(round(pct * 100))
-    f = ImageFont.truetype("C:/Windows/Fonts/segoeuib.ttf", 30 if len(n) < 3 else 22)
+    from platform_support import font_path, load_font
+    f = load_font(font_path("sans_bold"), 30 if len(n) < 3 else 22)
     d.text((ICON / 2, ICON / 2 + 1), n, font=f, fill=CREAM, anchor="mm")
     return img
 

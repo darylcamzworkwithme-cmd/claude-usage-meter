@@ -21,7 +21,7 @@ import pystray
 from config import ALERT_LEVELS, HOTKEY, TOKEN_BUDGET, UPDATE_EVERY
 from hotkey import listen
 from render import CLAY, FRAME_DELAY, FRAMES, TZ, _accent, render_frames
-from rk_screen import PID, VID, ScreenError, show, upload_frames
+from rk_screen import screen_present, PID, VID, ScreenError, show, upload_frames
 from tray import _clawd_icon, _pct_icon
 from usage import meter_snapshot
 from widget import Widget
@@ -143,7 +143,7 @@ class App:
     # ---------- keyboard ----------
     @staticmethod
     def _cable():
-        return any(d["usage_page"] == 0xFF03 for d in hid.enumerate(VID, PID))
+        return screen_present()
 
     @staticmethod
     def _fp(s):

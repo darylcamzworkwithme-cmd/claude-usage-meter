@@ -38,7 +38,28 @@ async def _read():
     return None
 
 
+def _mac_battery(ioreg_text=None):
+    """macOS: Bluetooth keyboards report BatteryPercent in the I/O Registry (read-only)."""
+    import re
+    import subprocess
+    if ioreg_text is None:
+        ioreg_text = subprocess.run(["ioreg", "-r", "-l", "-k", "BatteryPercent"],
+                                    capture_output=True, text=True, timeout=10).stdout
+    for block in ioreg_text.split("+-o "):
+        prod = re.search(r'"Product"\s*=\s*"([^"]*)"', block)
+        pct = re.search(r'"BatteryPercent"\s*=\s*(\d+)', block)
+        if prod and pct and KEYBOARD_NAME.lower() in prod.group(1).lower():
+            return int(pct.group(1))
+    return None
+
+
 def battery_percent():
+    import sys
+    if sys.platform == "darwin":
+        try:
+            return _mac_battery()
+        except Exception:
+            return None
     try:
         return asyncio.run(asyncio.wait_for(_read(), 10))
     except Exception:

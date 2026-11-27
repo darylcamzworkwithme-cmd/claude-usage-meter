@@ -1,4 +1,5 @@
-"""Windows global hotkey (RegisterHotKey) that calls a function. No extra packages needed."""
+"""Global hotkeys. Windows: RegisterHotKey (no extra packages). macOS (experimental): pynput,
+which needs Accessibility permission (System Settings > Privacy & Security > Accessibility)."""
 import ctypes
 import ctypes.wintypes as W
 import threading
@@ -22,8 +23,7 @@ def _parse(combo):
     return mods | MOD_NOREPEAT, key
 
 
-def listen(combo, callback):
-    """Start a daemon thread that runs callback() whenever the hotkey is pressed."""
+def _listen_win(combo, callback):
     mods, vk = _parse(combo)
     ready = threading.Event()
     ok = {}
@@ -42,3 +42,29 @@ def listen(combo, callback):
     threading.Thread(target=loop, daemon=True).start()
     ready.wait(2)
     return ok.get("v", False)
+
+
+def _listen_mac(combo, callback):
+    try:
+        from pynput import keyboard
+    except ImportError:
+        print("hotkeys on macOS need: pip install pynput", flush=True)
+        return False
+    names = {"ctrl": "<ctrl>", "alt": "<alt>", "shift": "<shift>", "win": "<cmd>", "cmd": "<cmd>"}
+    parts = [names.get(p, p) for p in combo.lower().replace(" ", "").split("+")]
+    try:
+        h = keyboard.GlobalHotKeys({"+".join(parts): callback})
+        h.daemon = True
+        h.start()
+        return True
+    except Exception as e:
+        print("hotkey failed:", e, flush=True)
+        return False
+
+
+def listen(combo, callback):
+    """Run callback() whenever the global hotkey is pressed. Returns True if registered."""
+    import sys
+    if sys.platform == "darwin":
+        return _listen_mac(combo, callback)
+    return _listen_win(combo, callback)

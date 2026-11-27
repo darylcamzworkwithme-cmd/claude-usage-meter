@@ -70,7 +70,8 @@ def fetch():
 
 def _fetch_live():
     """One request. Returns {"five_hour": {"used_percentage", "resets_at"}, "seven_day": {...}, "limits": [...]}."""
-    tok = json.loads(CREDS.read_text(encoding="utf-8"))["claudeAiOauth"]["accessToken"]
+    from platform_support import claude_access_token
+    tok = claude_access_token()  # Windows: ~/.claude/.credentials.json; macOS: Keychain
     req = urllib.request.Request(URL, headers={
         "Authorization": f"Bearer {tok}",
         "Content-Type": "application/json",

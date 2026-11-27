@@ -3,6 +3,7 @@
 A tiny, animated Claude Code usage meter for Windows. It shows your 5-hour and weekly limits at a glance on your **desktop**, in your **taskbar tray**, and on the built-in **screen of compatible keyboards**, with a pixel crab and Claude Code's "thinking" spinner.
 
 - **Works for everyone:** the desktop widget and tray icon need no special hardware.
+- **macOS:** an experimental, untested menu bar version is on the [`macos-experimental`](https://github.com/darylcamzworkwithme-cmd/claude-usage-meter/tree/macos-experimental) branch; see [docs/MACOS.md](docs/MACOS.md). Mac testers wanted.
 - **Keyboard screens:** RK N99 supported today, with more keyboards and brands on the roadmap (see [Keyboard compatibility](#keyboard-compatibility)).
 
 > **Unofficial.** Not affiliated with, endorsed by, or supported by Anthropic or Royal Kludge. "Claude" and the Claude pixel mascot are Anthropic's; "Royal Kludge"/"RK" are Royal Kludge's. Used here for identification only.
@@ -41,7 +42,7 @@ The whole project was made with Claude Code. [docs/PROMPTS.md](docs/PROMPTS.md) 
 
 ## Requirements
 
-- Windows 10/11, Python 3.10+
+- Windows 10/11, Python 3.10+ (macOS: experimental, see [docs/MACOS.md](docs/MACOS.md))
 - Claude Code installed and signed in
 - Optional: a [compatible keyboard](#keyboard-compatibility) for the keyboard-screen feature (currently the RK N99: USB cable for the screen, Bluetooth for battery level)
 
@@ -78,7 +79,9 @@ Today's token counts and the activity graph always come from your local Claude C
 
 | File | What it does |
 |---|---|
-| `app.py` | The app: tray, widget, keyboard sync, alerts |
+| `app.py` | The app: tray, widget, keyboard sync, alerts (Windows) |
+| `mac_app.py` | macOS menu bar app (experimental) |
+| `platform_support.py` | Cross-platform helpers: fonts, Claude login (file / macOS Keychain), screens |
 | `widget.py` / `tray.py` / `meter.py` | Desktop widget, tray icon, and keyboard updater (each can also run alone) |
 | `render.py` | Draws the round keyboard meter |
 | `rk_screen.py` | RK N99 screen protocol: ID check, upload, show (new keyboards go in modules next to it) |

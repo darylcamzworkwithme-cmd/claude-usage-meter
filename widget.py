@@ -27,47 +27,7 @@ FLOAT_SIZE = (300, 92)   # logical px
 DOCK_SIZE = (210, 38)
 
 
-def _dpi_aware():
-    try:
-        ctypes.windll.shcore.SetProcessDpiAwareness(2)
-    except Exception:
-        try:
-            ctypes.windll.user32.SetProcessDPIAware()
-        except Exception:
-            pass
-
-
-class _RECT(ctypes.Structure):
-    _fields_ = [("l", ctypes.c_long), ("t", ctypes.c_long), ("r", ctypes.c_long), ("b", ctypes.c_long)]
-
-
-class _MONINFO(ctypes.Structure):
-    _fields_ = [("cbSize", ctypes.c_ulong), ("mon", _RECT), ("work", _RECT), ("flags", ctypes.c_ulong)]
-
-
-class _POINT(ctypes.Structure):
-    _fields_ = [("x", ctypes.c_long), ("y", ctypes.c_long)]
-
-
-def monitor_at(x, y):
-    """(monitor rect, work-area rect) of the display nearest (x, y), physical px. Multi-monitor aware."""
-    u32 = ctypes.windll.user32
-    u32.MonitorFromPoint.restype = ctypes.c_void_p
-    u32.MonitorFromPoint.argtypes = [_POINT, ctypes.c_ulong]
-    h = u32.MonitorFromPoint(_POINT(int(x), int(y)), 2)  # MONITOR_DEFAULTTONEAREST
-    mi = _MONINFO()
-    mi.cbSize = ctypes.sizeof(_MONINFO)
-    u32.GetMonitorInfoW(ctypes.c_void_p(h), ctypes.byref(mi))
-    return mi.mon, mi.work
-
-
-def _taskbar_rect():
-    """(left, top, right, bottom) of the screen area NOT covered by the taskbar, in physical px."""
-    class RECT(ctypes.Structure):
-        _fields_ = [("l", ctypes.c_long), ("t", ctypes.c_long), ("r", ctypes.c_long), ("b", ctypes.c_long)]
-    r = RECT()
-    ctypes.windll.user32.SystemParametersInfoW(0x30, 0, ctypes.byref(r), 0)  # SPI_GETWORKAREA
-    return r.l, r.t, r.r, r.b
+from platform_support import IS_MAC, Rect, dpi_aware as _dpi_aware, load_font, monitor_at, set_screen_size  # noqa: E402
 
 
 # ---------- drawing ----------
@@ -77,7 +37,7 @@ class Pen:
         self.k = R.SS * scale
 
     def f(self, path, size):
-        return ImageFont.truetype(path, max(1, int(size * self.k)))
+        return load_font(path, size * self.k)
 
 
 def _verb(d, p, x, y, verb, accent, i, frames, size, bg):
@@ -104,11 +64,32 @@ def _bar(d, x0, x1, y, h, frac, color):
 
 def _finish(img, w, h, radius):
     small = img.resize((w, h), Image.LANCZOS)
+    if IS_MAC:
+        # macOS windows support real per-pixel transparency: smooth (anti-aliased) rounded corners
+        big = Image.new("L", (w * 4, h * 4), 0)
+        ImageDraw.Draw(big).rounded_rectangle([0, 0, w * 4 - 1, h * 4 - 1], radius=radius * 4, fill=255)
+        out = small.convert("RGBA")
+        out.putalpha(big.resize((w, h), Image.LANCZOS))
+        return out
     mask = Image.new("L", (w, h), 0)
     ImageDraw.Draw(mask).rounded_rectangle([0, 0, w - 1, h - 1], radius=radius, fill=255)
     out = Image.new("RGB", (w, h), KEY_RGB)
     out.paste(small, (0, 0), mask)
     return out
+
+
+def _make_transparent(win, label=None):
+    """Windows: a key color becomes transparent. macOS: real transparency (experimental)."""
+    if IS_MAC:
+        win.attributes("-transparent", True)
+        win.configure(bg="systemTransparent")
+        if label is not None:
+            label.configure(bg="systemTransparent")
+    else:
+        win.configure(bg=KEY_HEX)
+        win.attributes("-transparentcolor", KEY_HEX)
+        if label is not None:
+            label.configure(bg=KEY_HEX)
 
 
 def float_frames(s, scale, verb):
@@ -152,7 +133,7 @@ def dock_frames(s, scale, verb):
     d.rounded_rectangle([0, 0, W * k - 1, H * k - 1], radius=H / 2 * k, fill=PANEL, outline=BORDER, width=int(k))
     tx, right = 50 * k, (W - 14) * k
     num = f"{round(pct * 100)}%"
-    nf = p.f("C:/Windows/Fonts/segoeuib.ttf", 12)
+    nf = p.f(R.SANS_B, 12)
     d.text((right, 13 * k), num, font=nf, fill=R.CREAM, anchor="rm")
     _bar(d, tx, right, 25 * k, 4 * k, pct, accent)
     out = []
@@ -173,7 +154,7 @@ def _human(n):
 
 
 CARD_W = 300
-REGULAR = "C:/Windows/Fonts/segoeui.ttf"
+REGULAR = R.SANS
 
 
 def _reset_text(ra):
@@ -254,12 +235,14 @@ class Widget:
         _dpi_aware()
         self.provider = provider
         self.root = root or tk.Tk()
-        self.scale = self.root.winfo_fpixels("1i") / 96
+        # macOS Tk works in points (72/in) and scales for Retina itself: use 1.0 there
+        self.scale = 1.0 if IS_MAC else self.root.winfo_fpixels("1i") / 96
+        if IS_MAC:
+            set_screen_size(self.root.winfo_screenwidth(), self.root.winfo_screenheight())
         self.root.overrideredirect(True)
         self.root.attributes("-topmost", True)
-        self.root.configure(bg=KEY_HEX)
-        self.root.attributes("-transparentcolor", KEY_HEX)
-        self.label = tk.Label(self.root, bg=KEY_HEX, bd=0)
+        self.label = tk.Label(self.root, bd=0)
+        _make_transparent(self.root, self.label)
         self.label.pack()
         try:
             self.state = json.loads(STATE.read_text())
@@ -282,6 +265,8 @@ class Widget:
         self.label.bind("<B1-Motion>", self._drag)
         self.label.bind("<ButtonRelease-1>", self._drop)
         self.label.bind("<Button-3>", self._popup)
+        self.label.bind("<Button-2>", self._popup)          # macOS right-click
+        self.label.bind("<Control-Button-1>", self._popup)  # macOS ctrl-click
 
         from config import WIDGET_HOTKEY
         from hotkey import listen
@@ -309,8 +294,13 @@ class Widget:
                 x = self.state.get("dock_x", sw - w - round(260 * self.scale))
                 y = self.state.get("dock_y", sh - h // 2)
             mon, work = monitor_at(x + w // 2, y)
-            tb_h = max(mon.b - work.b, h)
-            y = work.b + (tb_h - h) // 2
+            if IS_MAC:  # no taskbar on macOS: "docked" = top-right, just under the menu bar
+                y = work.t + 6
+                if "dock_x" not in self.state:
+                    x = mon.r - w - 12
+            else:
+                tb_h = max(mon.b - work.b, h)
+                y = work.b + (tb_h - h) // 2
         else:
             if x is None:
                 x = self.state.get("float_x", sw - w - round(20 * self.scale))
@@ -389,10 +379,10 @@ class Widget:
         self.card = tk.Toplevel(self.root)
         self.card.overrideredirect(True)
         self.card.attributes("-topmost", True)
-        self.card.configure(bg=KEY_HEX)
-        self.card.attributes("-transparentcolor", KEY_HEX)
+        _make_transparent(self.card)
         self.card.geometry("+-10000+-10000")
-        self.card_label = tk.Label(self.card, bg=KEY_HEX, bd=0)
+        self.card_label = tk.Label(self.card, bd=0)
+        _make_transparent(self.card, self.card_label)
         self.card_label.pack()
         self.card_label.bind("<Button-1>", lambda e: self._toggle_card())
         self.card_label.bind("<Button-3>", self._popup)

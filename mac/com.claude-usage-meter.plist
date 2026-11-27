@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!-- Start Claude Usage Meter at login (macOS, experimental).
+     1. Replace /PATH/TO with real paths (run `which python3` and `pwd` in the repo folder).
+     2. cp mac/com.claude-usage-meter.plist ~/Library/LaunchAgents/
+     3. launchctl load ~/Library/LaunchAgents/com.claude-usage-meter.plist
+     To stop: launchctl unload ~/Library/LaunchAgents/com.claude-usage-meter.plist -->
+<plist version="1.0">
+<dict>
+  <key>Label</key><string>com.claude-usage-meter</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/PATH/TO/python3</string>
+    <string>/PATH/TO/claude-usage-meter/mac_app.py</string>
+  </array>
+  <key>WorkingDirectory</key><string>/PATH/TO/claude-usage-meter</string>
+  <key>RunAtLoad</key><true/>
+  <key>KeepAlive</key><false/>
+  <key>StandardOutPath</key><string>/tmp/claude-usage-meter.log</string>
+  <key>StandardErrorPath</key><string>/tmp/claude-usage-meter.log</string>
+</dict>
+</plist>

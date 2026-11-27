@@ -8,6 +8,7 @@ Reverse-engineered from RK_Keyboard_Software V4.6 DeviceDriver.exe (CDevG5KB):
   - Page write    : cmd 0x0C, frame index in [3], page index in [4], 512 bytes RGB565 (big-endian)
   - Acks arrive as 8-byte input reports (ID 0x09) on the same 0xFF03 collection; ack[1]==0x0A.
 """
+import sys
 import time
 import hid
 
@@ -26,6 +27,8 @@ class N99Screen:
     def __init__(self, verbose=True):
         devs = hid.enumerate(VID, PID)
         feat = [d for d in devs if d["usage_page"] == 0xFF03]
+        if not feat and devs and sys.platform == "darwin":
+            feat = devs  # macOS: one entry per device; feature report 0x09 still works on it
         if not feat:
             raise ScreenError("N99 screen controller not found (is the USB cable plugged in?)")
         self.f = hid.device(); self.f.open_path(feat[0]["path"])
@@ -148,7 +151,6 @@ def show(frames=24, delay=120, verbose=False):
 
 
 if __name__ == "__main__":
-    import sys
     from PIL import Image
 
     if len(sys.argv) > 1 and sys.argv[1] == "show":
@@ -160,3 +162,9 @@ if __name__ == "__main__":
         upload_image(Image.open(sys.argv[2]))
     else:
         print("usage: python rk_screen.py id | upload <image>")
+
+
+def screen_present():
+    """True if the RK N99 screen chip is reachable over USB."""
+    devs = hid.enumerate(VID, PID)
+    return any(d["usage_page"] == 0xFF03 for d in devs) or (sys.platform == "darwin" and bool(devs))
