@@ -3,6 +3,7 @@
 A tiny, animated Claude Code usage meter for Windows. It shows your 5-hour and weekly limits at a glance on your **desktop**, in your **taskbar tray**, and on the built-in **screen of compatible keyboards**, with a pixel crab and Claude Code's "thinking" spinner.
 
 - **Works for everyone:** the desktop widget and tray icon need no special hardware.
+- **macOS:** an experimental, untested menu bar version is on the [`macos-experimental`](https://github.com/darylcamzworkwithme-cmd/claude-usage-meter/tree/macos-experimental) branch (see its `docs/MACOS.md`). Mac testers wanted.
 - **Keyboard screens:** RK N99 supported today, with more keyboards and brands on the roadmap (see [Keyboard compatibility](#keyboard-compatibility)).
 
 > **Unofficial.** Not affiliated with, endorsed by, or supported by Anthropic or Royal Kludge. "Claude" and the Claude pixel mascot are Anthropic's; "Royal Kludge"/"RK" are Royal Kludge's. Used here for identification only.
