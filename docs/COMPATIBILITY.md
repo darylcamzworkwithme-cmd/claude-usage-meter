@@ -33,6 +33,20 @@ All RK screen uploads need **wired (USB) mode**. RK's own software doesn't uploa
 3. Or follow prompt 4 in [PROMPTS.md](PROMPTS.md) to have Claude Code work it out safely: read-only first, backups before writes.
 4. Add a module next to `rk_screen.py` and open a pull request with your findings.
 
+## Brands at a glance
+
+| Brand | Keyboards with a screen/knob display | How a meter could reach the screen | Effort / risk |
+|---|---|---|---|
+| **Royal Kludge (RK)** | N99 (round knob screen) ✅; S98, S85, N80, M87 | N99: this project. Others: reverse engineering (see above) | N99 done; others medium/higher risk |
+| **SteelSeries** | Apex Pro / Apex 7 series (OLED) | **Official GameSense SDK** with screen handlers for text and images; community: [apex-tux](https://github.com/not-jan/apex-tux) (Linux, direct USB), [ggoled](https://github.com/Donimax/ggoled) | **Easiest and safest**: documented by the maker, no flash writes |
+| **Ajazz / Epomaker** | AK820 Pro (TFT), AKS075 (128×128) | Community tools (below) | Medium: reverse-engineered |
+| **Yunzii** | AL80 (display module), IF99 | Community tools for AL80 (below) | Medium |
+| **Zuoya** | GMK87 (240×135) | Community tool (below) | Medium |
+| **XVX** | S-K80 (LCD) | Early community notes (below) | Higher: incomplete |
+| **Open hardware** (QMK/KMK/ESP32 builds) | [SmartKnob](https://github.com/MikeBrownse/smartknob) (knob with screen), [HelloWord](https://kbd.news/Hello-Word-Smart-Keyboard-1569.html) (e-ink + OLED + motorized knob), [FunModularKeyboard](https://github.com/ZhiFun/FunModularKeyboard) (already shows PC stats) | You write the firmware, so add a usage screen directly | Low risk, more building |
+
+> Contributors: **SteelSeries via GameSense** is the recommended next target. It's an official API, so there's no reverse engineering and no risk to the keyboard.
+
 ## Other brands: possible with porting
 
 **None of these are supported by this project yet**, and none are tested. They're listed because each has an independent community tool that already uploads images to the keyboard's screen. That's the hard part, so adding one here would mean wrapping that tool's protocol in a module next to `rk_screen.py` and fitting the design to its screen size. Check each project's own license and warnings first.
