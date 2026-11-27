@@ -16,6 +16,10 @@ A tiny, animated Claude Code usage meter for Windows: a taskbar widget, a tray i
 - **Alerts**: Windows notifications at 75% / 90% and when your session resets.
 - **Hotkeys**: `Ctrl+Alt+W` shows or hides the widget; `Ctrl+Alt+C` shows the meter on the keyboard.
 
+## Build or customize it with Claude Code
+
+The whole project was made with Claude Code. [docs/PROMPTS.md](docs/PROMPTS.md) has copy-paste prompts to install it, restyle it, wire up real usage numbers, or adapt it to your own keyboard's screen safely.
+
 ## Requirements
 
 - Windows 10/11, Python 3.10+
